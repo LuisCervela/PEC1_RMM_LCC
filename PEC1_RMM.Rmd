@@ -1,0 +1,657 @@
+---
+title: "RMM PEC1"
+author: "Luis Cervela"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, #shows code if dont set to FALSE 
+                      comment = NA, #avoid the ## to show in the print
+                      warning = FALSE #avoid warnings
+                      
+                      )
+
+```
+
+```{r, echo=FALSE, include = FALSE}
+#Aqui cargo todos los paketes necesarios
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(GGally)
+library(compareGroups)
+library(kableExtra)
+remotes::install_github("datalorax/equatiomatic")
+library(equatiomatic)
+library(car)
+library(ellipse)
+library(ggpubr)
+library(faraway)
+library(tibble)
+library(lmtest)
+library(jtools)
+library(huxtable)
+library(betareg)
+library(MASS)
+library(patchwork)
+
+
+```
+
+## Ejercicio 1 (35 pt.)
+
+Un grupo de científicos norteamericanos están interesados en encontrar un hábitat adecuado para reintroducir una especie rara de escarabajos tigre, llamada cicindela dorsalis dorsalis, los cuales viven en playas de arena de la costa del Atlántico Norte. Se muestrearon 12 playas y se midió la densidad de estos escarabajos tigre. Adicionalmente se midieron una serie de factores bióticos y abióticos tales como la exposición a las olas, tamaño de la partícula de arena, pendiente de la playa y densidad de los anfípodos depredadores. Los datos se hallan en la hoja de cálculo cicindela.xlsx.
+
+#### **(a) Ajustar un modelo de regresión lineal múltiple que estime todos los coeficientes de regresión parciales referentes a todas las variables regresoras y el intercepto**.
+
+Primero voy a cargar los datos como un data frame
+
+```{r, echo = FALSE, results='asis'}
+
+cicin_df <- read_xlsx('~/MEGA/MEGAsync (WORK)/Master/Regresión Modelos y Metodos/PEC1/cicindela.xlsx')
+
+cicin_df <- cicin_df %>% rename(WaveExposure = 'Wave exposure', BeachSteepness = 'Beach steepness')
+cat('Muestro los primeros 6 reultados')
+kable(head(cicin_df), 'simple') %>% 
+  kable_styling(font_size = 7)
+
+
+```
+
+
+Una vez cagados y explorados los datos realizo un modelo de regresión con la función lm y obtengo los coeficientes con la función sum()
+
+
+```{r, echo= FALSE, results = 'markup'}
+
+lmcicin <- lm(BeetleDensity ~ WaveExposure + Sandparticlesize + BeachSteepness + AmphipodDensity, data = cicin_df )
+
+print(summary(lmcicin))
+
+
+kable(coef(summary(lmcicin)), caption = 'Intercepto y todos los coeficientes de regresión del modelo')
+
+
+```
+
+
+##### **¿Es significativo el modelo obtenido? ¿Qué test estadístico se emplea para contestar a esta pregunta?. Plantear la hipótesis nula y la alternativa del test.**
+
+
+Para determinar si el modelo es significativo observamos el valor F y el valor p asociado al estadístico F en la salida del modelo. El estadístico F se utiliza para evaluar la hipótesis nula de que todos los coeficientes de regresión (excepto el intercepto) son iguales a cero, lo que implicaría que las variables independientes no tienen un efecto significativo en la variable dependiente.
+
+En este caso, el estadístico **F es 39.71**, y el valor **p asociado es 6.727e-05** (muy pequeño, cercano a 0).
+
+
+Las hipótesis para el test F son:
+
+**Hipótesis nula (H0)**: Todos los coeficientes de regresión parciales (excepto el intercepto) son iguales a cero (no hay relación entre las variables independientes y la variable dependiente).
+
+**Hipótesis alternativa (H1)**: Al menos uno de los coeficientes de regresión parciales es diferente de cero (hay una relación entre al menos una de las variables independientes y la variable dependiente).
+
+Dado que el valor p del estadístico F es muy pequeño (6.727e-05), se puede rechazar la hipótesis nula a favor de la hipótesis alternativa. Esto indica que el modelo es significativo y que al menos una de las variables independientes tiene un efecto significativo en la variable dependiente (BeetleDensity).
+
+
+Además, puedes observar el coeficiente de determinación (R^2) y el coeficiente de determinación ajustado (R^2 ajustado) para evaluar la calidad del modelo. En este caso, el **R^2 es 0.9578** y el **R^2 ajustado es 0.9337**, lo que indica que el modelo explica un alto porcentaje de la variabilidad en la densidad de escarabajo
+
+
+##### **¿Qué variables han salido significativas para un nivel de significación α = 0.10?**
+
+
+Solamente las variable AmphipodDensity (p valor = 0.0501) y Sandparticlesize (p valor = 0.0125)
+
+
+#### **(b) Calcular los intervalos de confianza al 90 y 95% para el parámetro que acompaña a la variable AmphipodDensity. Utilizando sólo estos intervalos, ¿qué podríamos haber deducido sobre el pvalor para la densidad de los anfípodos depredadores en el resumen del modelo de regresión? ¿Qué interpretación práctica tiene este parámetro β4?**
+
+```{r, echo = FALSE}
+# Intervalos de confianza al 90% y 95% para el coeficiente de AmphipodDensity
+ic_90 <- confint(lmcicin, level = 0.90)["AmphipodDensity", ]
+ic_95 <- confint(lmcicin, level = 0.95)["AmphipodDensity", ]
+
+
+cat("Intervalo de confianza al 90% para AmphipodDensity:", round(ic_90,4), "\n")
+cat("Intervalo de confianza al 95% para AmphipodDensity:", round(ic_95,4), "\n")
+
+
+```
+
+
+Dado que ambos intervalos de confianza no incluyen el valor cero, podemos deducir que el valor p asociado al coeficiente de AmphipodDensity es menor que 0.10 y 0.05. En otras palabras, la variable AmphipodDensity es significativa tanto al nivel de significación del 90% como al 95%. sin embrago, el hecho de que el límite superior al 95% esté tan cerca de cero (7e-04) sugiere que la relación entre AmphipodDensity y BeetleDensity podría ser débil o menos segura de lo que indicaría un valor p más pequeño.
+
+
+```{r, echo= FALSE}
+extract_eq(lmcicin)
+```
+
+
+El parámetro β4 corresponde al coeficiente asociado con la variable AmphipodDensity. Este coeficiente nos indica la relación entre la densidad de anfípodos y la densidad de escarabajos (BeetleDensity) mientras se mantienen constantes las otras variables en el modelo (exposición a las olas = Wave Exposure, tamaño de partículas de arena = Sandparticle size y pendiente de la playa = beach steepness).
+
+La interpretación práctica de β4 es la siguiente: por cada unidad de incremento en la densidad de anfípodos (AmphipodDensity), se espera que la densidad de escarabajos (BeetleDensity) cambie en β4 unidades, asumiendo que las otras variables del modelo (exposición a las olas, tamaño de partículas de arena y pendiente de la playa) se mantienen constantes.
+
+En este caso, el **coeficiente estimado para AmphipodDensity es -1.5624**, lo que indica que un aumento en la densidad de anfípodos depredadores está asociado con una disminución en la densidad de escarabajos.
+
+#### **(c) Estudiar la posible multicolinealidad del modelo con todas las regresoras calculando los VIFs.**
+
+El Factor de Inflación de la Varianza (VIF) es una medida que puede ayudarte a identificar la multicolinealidad en un modelo de regresión. La multicolinealidad ocurre cuando las variables independientes en un modelo de regresión están altamente correlacionadas entre sí, lo que puede hacer que los coeficientes de regresión sean inestables y difíciles de interpretar.
+
+
+```{r, echo = FALSE}
+
+vifs <- vif(lmcicin)
+
+
+vifs
+```
+
+
+Generalmente, se considera que un VIF mayor a 5 o 10 indica que la multicolinealidad podría ser un problema en el modelo. En este caso, todos los VIFs están por debajo de 10, pero el VIF para AmphipodDensity está cerca de 5, lo que sugiere que podría haber cierta multicolinealidad en el modelo relacionada con esta variable.
+
+Se podrías considerar explorar la correlación entre AmphipodDensity y las otras variables independientes para entender mejor su relación.
+
+
+#### **(d) Considerar el modelo más reducido que no incluye las variables exposición a las olas y la pendiente de la playa y decidir si nos podemos quedar con este modelo reducido mediante un contraste de modelos con el test F para un α = 0.05. Escribir en forma paramétrica las hipótesis H0 y H1 de este contraste. Comparar el ajuste de ambos modelos.**
+
+Para realizar un contraste de modelos con el test F para un nivel de significación α = 0.05, utilizamos la función anova() en R, que compara los dos modelos.
+
+
+Las hipótesis para el contraste de modelos usando el test F son:
+
+**Hipótesis nula (H0)**: El modelo reducido es suficiente para explicar la variabilidad en la densidad de escarabajos (BeetleDensity). Es decir, los coeficientes de las variables excluidas (WaveExposure y BeachSteepness) son iguales a cero.
+
+**Hipótesis alternativa (H1)**: El modelo completo, que incluye las variables WaveExposure y BeachSteepness, es significativamente mejor para explicar la variabilidad en la densidad de escarabajos que el modelo reducido.
+
+
+```{r, echo = FALSE}
+
+lmRcicin <- lm(BeetleDensity ~ Sandparticlesize + AmphipodDensity, data = cicin_df)
+
+
+testf <- anova(lmRcicin, lmcicin)
+
+
+print(testf)
+```
+
+
+El valor p del test **F es 0.3517**. Dado que el nivel de significación es α = 0.05, y el valor p (0.3517) es mayor que α, no puedes rechazar la hipótesis nula. Esto indica que el modelo reducido, que excluye las variables WaveExposure y BeachSteepness, es suficiente para explicar la variabilidad en la densidad de escarabajos (BeetleDensity).
+
+Además al comparar el ajuste de ambos modelos vemos que son prácticamente iguales
+
+```{r, echo=FALSE}
+
+r2cicin <- summary(lmcicin)$r.squared
+r2adjcicin <- summary(lmcicin)$adj.r.squared
+
+r2Rcicin <- summary(lmRcicin)$r.squared
+r2adjRcicin <- summary(lmRcicin)$adj.r.squared
+
+# Combinar los valores en un data frame
+r2cicin <- data.frame(
+  Modelo = c("Mocelo completo", "Modelo reducido"),
+  R.cuadrado = c(r2cicin, r2Rcicin),
+  R.cuadrado.ajustado = c(r2adjcicin, r2adjRcicin)
+)
+
+# Imprimir la tabla
+kable(r2cicin, 'simple') 
+```
+
+
+Dado que los resultados del test F que realizamos antes indicaron que no hay una diferencia significativa entre estos, y considerando la similitud en los ajustes de los modelos, es razonable quedarse con el modelo reducido. El modelo reducido es más simple y, según la información que tenemos, explica la variabilidad en la densidad de escarabajos de manera similar al modelo completo.
+
+
+#### **(e) Calcular y dibujar una región de confianza conjunta al 95% para los parámetros asociados con Sandparticlesize y AmphipodDensity con el modelo que resulta del apartado anterior**.
+
+
+```{r, echo = FALSE}
+
+
+conf_ellipse <- data.frame(ellipse(lmRcicin, level = 0.95, which = c("Sandparticlesize", "AmphipodDensity")))
+
+ggplot(conf_ellipse, aes(x = Sandparticlesize, y = AmphipodDensity)) +
+  geom_path(color = "blue", size = 1) +
+  geom_point(aes(x = coef(lmRcicin)["Sandparticlesize"], y = coef(lmRcicin)["AmphipodDensity"]),
+             color = "red", size = 3) +
+  geom_point(aes(x = 0, y = 0), color = "black", size = 3) +
+  geom_text(aes(x = 0, y = 0, label = "(0,0)"), vjust = 2, hjust = 0.5, color = "black", size = 5) +
+  labs(x = "Sandparticlesize",
+       y = "AmphipodDensity") +
+  ggtitle ('Región de confianza conjunta al 95% (con origen de coordenadas)') +
+  theme_minimal()+
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.ticks.length = unit(0.1, "cm"),
+        axis.ticks = element_line(color = "black", size = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(color = "black", size = 0.5),
+        legend.position = c(0.95, 0.1),
+        legend.justification = c(1, 0),
+        legend.title = element_blank())
+
+  
+
+
+
+```
+
+
+El punto (0,0) está fuera de la elipse de confianza conjunta al 95% para los coeficientes de las variables Sandparticlesize y AmphipodDensity, esto indica que no es probable que ambos coeficientes sean simultáneamente iguales a cero. En otras palabras, sugiere que al menos una de las dos variables (o ambas) tiene un efecto significativo en la variable de respuesta (BeetleDensity), considerando el nivel de confianza del 95%.
+
+
+#### **(f) Con el modelo reducido del apartado (d), predecir en forma de intervalo de confianza al 95% la densidad de los escarabajos tigre previsible para una playa cercana a un conocido hotel donde el tamaño de partícula de arena es 5 y la densidad de anfípodos depredadores es 11. Comprobar previamente que los valores observados no suponen una extrapolación.**
+
+Primero comprobamos que los valores estén en el rango del modelo. 
+
+
+```{r, echo = FALSE}
+sandparticle_range <- range(cicin_df$Sandparticlesize)
+amphipod_range <- range(cicin_df$AmphipodDensity)
+
+sandparticle_extrapolation <- (5 < sandparticle_range[1]) | (5 > sandparticle_range[2])
+amphipod_extrapolation <- (11 < amphipod_range[1]) | (11 > amphipod_range[2])
+
+if (sandparticle_extrapolation) {
+  cat("El valor de Sandparticlesize (5) supone una extrapolación.\n")
+} else {
+  cat("El valor de Sandparticlesize (5) NO supone una extrapolación.\n")
+}
+
+if (amphipod_extrapolation) {
+  cat("El valor de AmphipodDensity (11) supone una extrapolación.\n")
+} else {
+  cat("El valor de AmphipodDensity (11) NO supone una extrapolación.\n")
+}
+
+```
+
+
+
+```{r, echo=FALSE}
+datospredict <- data.frame(Sandparticlesize = 5, AmphipodDensity = 11)
+prediccion <- predict(lmRcicin, newdata = datospredict, interval = "confidence", level = 0.95)
+
+kable(prediccion, 'simple')
+```
+
+El intervalo de confianza al 95% para la predicción de la densidad de escarabajos tigre en la playa cercana al hotel, utilizando el modelo reducido, es de (26.05, 35.48). Esto significa que, con un 95% de confianza, podemos esperar que la densidad de escarabajos tigre en esta playa esté entre 26 y 35.
+
+
+## Ejercicio 2 (35 pt.)
+
+En el trabajo de Whitman et al. (2004) se estudia, entre otras cosas, la relación entre la edad de los leones y la proporción oscura en la coloración de sus narices. En el archivo lions.csv disponemos de los datos de 105 leones machos y hembras de dos áreas de Tanzania, el parque nacional de Serengueti y el cráter del Ngorongoro, entre 1999 y 2002. Las variables registradas son la edad conocida de cada animal y la proporción oscura de su nariz a partir de fotografías tratadas digitalmente (ver figura adjunta). En la figura 1 se reproduce el gráfico de dispersión de la figura 4 del artículo con el cambio de coloración de la nariz según la edad de machos y hembras en las dos poblaciones separadas. **Nota: Los datos se han extraído principalmente del gráfico del artículo de Whitman et al. (2004) y por lo tanto son aproximados. Algunos paquetes de R contienen un data.frame con una parte de estos datos. Por ejemplo LionNoses del paquete abd contiene los datos de todos los machos. En consecuencia, los resultados numéricos de vuestro análisis pueden ser ligeramente distintos a los del trabajo original.**
+
+#### **(a) Reproducir el gráfico de dispersión de la figura 1 (figura 4d del artículo) lo más fielmente posible al original, ya que se trata de una exigencia de los editores de la revista.**
+
+
+```{r, echo = FALSE}
+
+lions_df <- read.csv('~/MEGA/MEGAsync (WORK)/Master/Regresión Modelos y Metodos/PEC1/lions.csv')
+cat('Muestro los primeros 6 reultados de la tabla y la reproducción del gráfico del articulo')
+kable(head(lions_df), 'simple') %>% 
+  kable_styling(font_size = 7)
+
+lions_df$sex <- as.factor(lions_df$sex)
+lions_df$area <- as.factor(lions_df$area)
+lions_df$sex_area <- paste(lions_df$sex, lions_df$area, sep = "_")
+
+
+```
+
+```{r, echo = FALSE}
+# Calcular ejemplares por zona y sexo
+group_counts <- as.data.frame(table(lions_df$sex, lions_df$area))
+colnames(group_counts) <- c("sex", "area", "count")
+
+# Reordenar para emular la figura
+group_counts <- group_counts[order(-as.numeric(group_counts$area), group_counts$sex),]
+
+# Creat etiquetas
+group_counts$labels <- paste0(c("Serengeti females",
+                                 "Serengeti males",
+                                 "Ngorongoro females",
+                                 "Ngorongoro males"), " (n = ", group_counts$count, ")")
+```
+
+```{r, echo = FALSE, fig.width= 9.5}
+# Crear el gráfico de dispersión
+ ggplot(lions_df, aes(x = age, y = prop.black, 
+                     shape = factor(interaction(sex, area), 
+                                    levels = c("F.S", "M.S", "F.N", "M.N")),
+                     color = factor(interaction(sex, area), 
+                                    levels = c("F.S", "M.S", "F.N", "M.N")))) +
+  geom_point(size = 2) +
+  scale_shape_manual(values = c(16, 17, 1, 2),
+                     labels = group_counts$labels) +
+  scale_color_manual(values = c("black", "black", "black",'black', "white","white"),
+                     labels = group_counts$labels) +
+  labs(x = "Age (yr)",
+       y = "Proportion black",
+       shape = NULL, color = NULL) +
+  scale_x_continuous(limits = c(0,16),
+                     breaks = seq(0, 16, by = 2)) +
+  scale_y_continuous(limits = c(0,1),
+                     breaks = seq(0, 1, by = 0.2)) +
+  theme_minimal() +
+  theme(axis.ticks.length = unit(0.1, "cm"),
+        axis.ticks = element_line(color = "black", size = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(color = "black", size = 0.5),
+        legend.position = c(0.95, 0.1),
+        legend.justification = c(1, 0),
+        legend.title = element_blank(),
+        legend.box.just = "right")
+
+
+```
+
+
+#### **(b) En el artículo se destacan los siguientes resultados:"After controlling for age, there was no effect of sex on nose colour in the Serengeti, but Ngorongoro males had lighter noses than Ngorongoro females". Ajustar un primer modelo sin considerar la posible interacción entre el sexo y las áreas y contrastar si el sexo es significativo en el modelo así ajustado y en los modelos separados según el área.**
+
+```{r, echo = FALSE}
+lmleon <- lm(prop.black ~ sex + area + age, data = lions_df )
+
+
+cat('Este es el resumen del modelo completo')
+summary(lmleon)
+
+```
+
+En el modelo completo, la variable sex tiene un valor **p de 0.0279**, lo que indica que hay una diferencia significativa en la proporción de la nariz que es negra entre machos y hembras después de controlar el área y la edad. El coeficiente estimado para la variable sexM es -0.068416, lo que indica que los machos tienen una proporción de nariz negra 0.068416 menor que las hembras después de controlar el área y la edad.
+
+
+Ahora generamos los modelos teniendo en cuenta el efecto del area
+
+```{r, echo=FALSE}
+lmS<- lm(prop.black ~ sex + age, data = subset(lions_df, area == "S"))
+lmN <- lm(prop.black ~ sex + age, data = subset(lions_df,area == "N"))
+cat('Este es el resumen del modelo para el area del Serengeti')
+summary(lmS)
+interceptS <- coef(lmS)[1]
+slopeS_sex <- coef(lmS)[2]
+slopeS_age <- coef(lmS)[3]
+
+cat("Equacion Serengeti: prop.black =", interceptS, "+", slopeS_sex , "* sex +", slopeS_age, "age\n")
+
+
+interceptN <- coef(lmN)[1]
+slopeN_sex <- coef(lmN)[2]
+slopeN_age <- coef(lmN)[3]
+cat('Este es el modelo para el area del Ngorongoro')
+summary(lmN)
+cat("Equacion Ngorongoro: prop.black =", interceptN, "+", slopeN_sex, "* sex +", slopeN_age, "age\n")
+
+```
+
+
+En el modelo ajustado solo para el área del Serengeti, la variable sex no es significativa (valor p: 0.4098), lo que indica que no hay una diferencia significativa en la proporción de la nariz que es negra entre machos y hembras en esta área después de controlar la edad.
+
+En el modelo ajustado solo para el área de Ngorongoro, la variable sex es significativa (valor p: 0.047776), lo que indica que hay una diferencia significativa en la proporción de la nariz que es negra entre machos y hembras en esta área después de controlar la edad. El coeficiente estimado para la variable sexM es -0.1674816, lo que indica que los machos tienen una nariz más clara que las hembras en Ngorongoro.
+
+Estos resultados están en consonancia con lo afirmado por el articulo **After controlling for age, there was no effect of sex on nose colour in the Serengeti, but Ngorongoro males had lighter noses than Ngorongoro females**
+
+
+
+#### **(c) Otro resultado destacado es que para los machos hay diferencias según el área. Contrastar este resultado y dibujar las rectas de regresión para las dos áreas que se obtienen del modelo.**
+
+
+```{r, echo= FALSE, fig.width= 9.5}
+# Filtrar los datos por sexo "M"
+lionsM <- subset(lions_df, sex == "M")
+
+# Hacer la regresión para machos
+lmleonM <- lm(prop.black ~ area + age, data = lionsM)
+cat('Modelo de regresión para los Machos')
+summary(lmleonM) # Imprimir resumen del modelo
+
+
+
+# Graficar los puntos y las regresiones por areas para machos
+lionsMplot <- ggplot(lionsM, aes(x = age, y = prop.black, color = area)) +
+  geom_point(size = 2) +
+  geom_smooth(formula = y~x, method = lm, se = TRUE) +
+  scale_color_manual(values = c("blue", "red"), labels = c('Ngorongoro', 'Serengeti')) +
+  ggtitle('Rectas de regresión para Machos') +
+  labs(x = "Age (yr)",
+       y = "Proportion black",
+       color = "Area") +
+  theme_minimal() +
+  theme(axis.ticks.length = unit(0.1, "cm"),
+        axis.ticks = element_line(color = "black", size = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(color = "black", size = 0.5),
+        legend.position = c(0.95, 0.1),
+        legend.justification = c(1, 0),
+        legend.title = element_blank(),
+        legend.box.just = "right")
+lionsMplot
+
+
+
+```
+
+
+En el modelo ajustado para los machos, la variable area es significativa (valor p: 0.0321), lo que indica que hay una diferencia significativa en la proporción de la nariz que es negra entre machos del Serengeti y de Ngorongoro. El coeficiente estimado para la variable areaS es 0.14411 , lo que indica que los machos sel Sremgeti tienen una nariz más oscura que las machos de Ngorongoro. Los resultados est están en consonancia con los del artículo. *(After controlling for age, there was no effect of sex on nose colour in the Serengeti, but Ngorongoro males had lighter noses than Ngorongoro females (P = 0.0485) and Serengeti males (P = 0.0281))*
+
+
+
+
+#### **(d) En la tabla 1 del artículo de Whitman et al. se dan los intervalos de confianza al 95 %, al 75% y al 50% para predecir la edad de una leona de 10 años o menos según su proporción de pigmentación oscura en la nariz. La primera cuestión es: ¿sirven para esto los modelos estudiados en los apartados anteriores? Reproducir la fila de la tabla 1 para una proporción del 0.50 según el modelo que proponen en el artículo.**Aclarar un detalle: lo que en la tabla 1 del artículo se llama s.e., standard error ¿qué es exactamente? *Nota: Recordemos también aquí que los resultados pueden ser ligeramente distintos a los del artículo por la utilización de datos aproximados.*
+
+El error estándar (s.e.) en la tabla se refiere a la desviación estándar de los errores de estimación. Es una medida de la variabilidad en las estimaciones de la edad basada en el modelo de regresión ajustado. La s.e. nos da una idea de la precisión de las estimaciones de edad proporcionadas por el modelo.
+
+```{r, echo = FALSE}
+
+leonas10 <- lions_df[lions_df$age <= 10 & lions_df$sex == "F", ]
+modeloarticulo <- lm(age ~ I(asin(prop.black)), data = leonas10)
+
+
+prop_black <- 0.50
+prop_black_sqrt <- sqrt(1 - prop_black^2)
+se_age <- summary(modeloarticulo)$sigma * sqrt(1 + 1/nrow(leonas10) + (prop_black_sqrt - mean(leonas10$prop.black))^2 / sum((leonas10$prop.black - mean(leonas10$prop.black))^2))
+
+
+
+# Calcular la edad estimada y los intervalos de predicción para una proporción de 0.50
+predicted_age <- predict(modeloarticulo, newdata = data.frame(prop.black = prop_black), interval = "prediction", level = 0.95)
+predicted_age_75 <- predict(modeloarticulo, newdata = data.frame(prop.black = prop_black), interval = "prediction", level = 0.75)
+predicted_age_50 <- predict(modeloarticulo, newdata = data.frame(prop.black = prop_black), interval = "prediction", level = 0.50)
+
+```
+
+
+```{r, echo = FALSE}
+results_df <- tibble(
+  "Edad (SE)" = c(sprintf("%.2f (%.2f)", predicted_age[1, "fit"], se_age)),
+  "95% p.i." = c(sprintf("%.2f - %.2f", predicted_age[1, "lwr"], predicted_age[1, "upr"])),
+  "75% p.i." = c(sprintf("%.2f - %.2f", predicted_age_75[1, "lwr"], predicted_age_75[1, "upr"])),
+  "50% p.i." = c(sprintf("%.2f - %.2f", predicted_age_50[1, "lwr"], predicted_age_50[1, "upr"]))
+)
+
+kable(results_df, 'simple', caption = 'Estimaciones para Prop.black = 0.50') %>% 
+  kable_styling(font_size = 7)
+
+
+```
+
+## Ejercicio 3 (30 pt.)
+
+
+#### **(a) Verificar las hipótesis de Gauss-Markov y la normalidad de los residuos del modelo completo del apartado (b) del ejercicio 2. Realizar una completa diagnosis del modelo para ver si se cumplen las condiciones del modelo de regresión: normalidad, homocedasticidad,. . . y estudiar la presencia de valores atípicos, de alto leverage y/o puntos influyentes. Construir los gráficos correspondientes y justificar su interpretación. ¿Podemos considerar el modelo ajustado como fiable?**
+
+Para verificar las hipótesis de Gauss-Markov y la normalidad de los residuos en el modelo de regresión, vamos a realizar un análisis diagnóstico completo. Utilizaremos gráficos de residuos y algunas pruebas estadísticas para evaluar la normalidad, la homocedasticidad y la presencia de valores atípicos, puntos de alto leverage y/o puntos influyentes.
+
+```{r, echo = FALSE, fig.width= 9.5}
+par( mfrow = c(2,2))
+plot(lmleon)
+```
+**Gráfico de Residuals vs Fitted:** Esta gráfica muestra si los residuos tienen patrones no lineales. Podría haber una relación no lineal entre las variables predictoras y una variable de resultado y el patrón podría aparecer en este gráfico si el modelo no captura la relación no lineal. Si se observan residuos igualmente distribuidos alrededor de una línea horizontal sin patrones distinguibles, es una buena indicación de que no tiene relaciones no lineales. 
+
+En nuestro caso se puede observar que a partir de 0.8 los residuos no se distribuyen de manera aleatoria lo que puede sugerir no linealidad. 
+
+**Gráfico Scale-Location:** Este gráfico muestra si los residuos se distribuyen por igual a lo largo de los rangos de los predictores. Así es como se puede comprobar el supuesto de igualdad de varianza (homocedasticidad). Si se observa una línea horizontal con puntos de distribución iguales (al azar) sugiere que hay homocedasticidad.
+
+En nuestro caso parece que los residuos aumentan la distancia entre ellos a partir de 0.5, lo que sugiere heterocedasticidad.
+
+**Gráfico Normal Q-Q:** Si los puntos se ajustan aproximadamente a la línea diagonal, entonces se puede suponer que los residuos siguen una distribución normal.
+
+En nuestro caso los residuos parece que tienen un distribución normal. 
+
+**Gráfico Residuals vs Leverage (Cook's distance):** Este gráfico identifica puntos influyentes, es decir, observaciones que tienen un impacto significativo en el ajuste del modelo. Si hay puntos que se destacan en términos de distancia de Cook, podrían ser motivo de preocupación.
+
+En nuestro caso no se observan puntos influyentes ya que todos los residuos aparecen dentro de la distancia de Cook.
+
+
+Para confirmar las observaciones podemos realizar tests estadisticos para confirmar si los residuos cumplen la normalidad y la homocedasticidad. 
+
+
+```{r, echo = FALSE}
+cat('Prueba de Shapiro-Wilk (para evaluar la normalidad de los residuos)')
+shapiro_test <- shapiro.test(lmleon$residuals)
+
+print(shapiro_test)
+
+cat('Prueba de Breusch-Pagan (para evaluar la homocedasticidad)')
+bp_test <- bptest(lmleon)
+
+print(bp_test)
+
+```
+
+**Prueba de Shapiro-Wilk:** Si el valor p es mayor que el nivel de significancia (por ejemplo, 0.05), entonces no hay evidencia suficiente para rechazar la hipótesis nula de que los residuos siguen una distribución normal.
+
+En nuestro caso p-value = 0.7072 lo que no nos permite rechazar la hipótesis nula de normalidad, lo que sugiere que los residuos siguen una distribución normal
+
+**Prueba de Breusch-Pagan:** Si el valor p es mayor que el nivel de significancia (por ejemplo, 0.05), entonces no hay evidencia suficiente para rechazar la hipótesis nula de homocedasticidad en los residuos.
+
+En nuestro caso p-value = 0.01717 lo que nos permite rechazar la hipotesis nula de homocedasticidad lo que indica que el modelo puede tener problemas de heterocasticidad. 
+
+
+#### **b) Teniendo en cuenta que la variable respuesta de la regresión del apartado (b) del ejercicio 2 es una proporción, ¿presenta algún problema este modelo? ¿Qué alternativas nos podemos plantear para mejorar el ajuste de los datos?**
+
+Cuando la variable dependiente es un porcentaje, es decir está acotado superior e inferiormente entre 0 y 1 se puede estimar un modelo de probabilidad lineal, sobre todo si el modelo sólo tiene valores intermedios. Sin embargo, cuando los porcentajes están muy próximos a 0 o a 1 ya no se comportan como cuando están en mitad de la tabla porque se “frenan”, se “tuercen” acotados en 0 y 1 respectivamente. Dos de las transformaciones estabilizadoras de varianza más comunes usadas para datos porcentuales son las transformaciones logit y arcoseno. En nuestro caso si observamos la distribución de prop.black en un boxplot vemos que para las hembras del Serengeti (FS) hay varias medidas próximas a los extremos [0,1]. 
+
+La transformación de variables consiste en sustituir los valores originales de las variables por una función de esa variable. La transformación de variables con funciones matemáticas ayuda a reducir la asimetría de las variables, mejorando así la dispersión de valores, y a veces desenmascara las relaciones lineales y aditivas entre los predictores y el objetivo.
+
+
+```{r, echo = FALSE}
+lions_df2 <- lions_df %>%
+  mutate(sex_area = paste(sex, area)) %>%
+  arrange(sex, area)
+
+ggplot(lions_df2, aes(x = sex_area, y = prop.black, group = sex_area, color = area)) +
+  geom_boxplot() +
+  geom_jitter(position = position_jitter(width = 0.2), alpha = 0.5) +
+  labs(x = "Sexo y Área", y = "Proporción negra") +
+  ggtitle("Boxplots por sexo y área con puntos de datos") +
+  theme_bw()
+
+
+
+
+```
+
+#### **(c) Aplicar la transformación más adecuada a la variable respuesta del modelo considerado. Comparar los dos modelos: con y sin la transformación. ¿Qué modelo es mejor? Justificar la respuesta.**
+
+Aplicamos una transformación arcoseno y una transformación logaritmica. Y comparamos los ajustes con la funcion AIC() y BIC().
+
+```{r, echo = FALSE}
+
+lmleonlogit <- lm(log(prop.black/(1-prop.black)) ~ sex + area + age, data = lions_df)
+lmleonasin <- lm(asin(sqrt(prop.black)) ~ sex + area + age, data = lions_df)
+
+aic_lmleon <- AIC(lmleon)
+aic_lmleon_logit <- AIC(lmleonlogit)
+aic_lmleon_asin <- AIC(lmleonasin)
+
+bic_lmleon <- BIC(lmleon)
+bic_lmleon_logit <- BIC(lmleonlogit)
+bic_lmleon_asin <- BIC(lmleonasin)
+
+
+r2_lmleon <- summary(lmleon)$adj.r.squared
+r2_lmleon_logit <- summary(lmleonlogit)$adj.r.squared
+r2_lmleon_asin <- summary(lmleonasin)$adj.r.squared
+
+
+r2_table <- tibble(
+  Model = c("Original", "Logit", "Arcoseno"),
+  R_cuadrado_ajustado = c(r2_lmleon, r2_lmleon_logit, r2_lmleon_asin),
+  AIC = c(aic_lmleon, aic_lmleon_logit, aic_lmleon_asin),
+  BIC = c(bic_lmleon, bic_lmleon_logit, bic_lmleon_asin))
+
+# Mostrar la tabla de R^2
+kable(r2_table, 'simple')
+
+```
+
+
+Ni la transformacion logit ni la de arcoseno mejoran el modelo en base a los Resultados del criterio de información de Akaike (AIC) o del criterio de información bayesiano (BIC). Ademas los valores R cuadrado son mejores para el modelo sin tranformar
+
+
+#### **(d) Realizar una rápida diagnosis del modelo transformado. ¿Estamos satisfechos con este nuevo modelo? ¿Qué otro ajuste nos podemos plantear para mejorar el modelo?**
+
+Comprobamos que los gráficos de residuos son muy similares. Los modelos transformados no parecen mejorar el original. 
+
+Podemos usar otra transformación como la tramsformación beta. La trasnformación beta es usada para modelar el comportamiento de variables aleatorias limitadas por intervalos de longitud finita. En particular, es una distribución adecuada para porcentajes y proporciones.
+
+```{r, echo=FALSE}
+effect_plot(lmleonasin, pred = age, interval = TRUE, plot.points = TRUE, jitter = 0.05, data = lions_df, main.title = 'Modelo arcoseno', y.label = 'Prop black') +
+effect_plot(lmleonlogit, pred = age, interval = TRUE, plot.points = TRUE, jitter = 0.05, data = lions_df, main.title = 'Modelo logit', y.label = 'Prop black') +
+effect_plot(lmleon, pred = age, interval = TRUE, plot.points = TRUE, jitter = 0.05, data = lions_df, main.title = 'Modelo Original', y.label = 'Prop black') 
+
+lmleonbeta <- betareg(prop.black ~ sex + area + age, data = lions_df)
+par( mfrow= c(1,4))
+plot(lmleon, main = 'Original') 
+
+par(mfrow = c(1,4))
+plot(lmleonasin, main = 'Arcoseno') 
+
+par(mfrow = c(1,4))
+plot(lmleonlogit, main = 'Logit') 
+
+par(mfrow = c(2,3))
+plot(lmleonbeta, main = 'Beta', which = 1:6)
+```
+
+
+Si aplicamos la transformacion beta con la función betareg() parece que si mejoramos el ajuste del modelo. 
+```{r, echo = FALSE}
+kable(BIC(lmleon,lmleonbeta))
+kable(AIC(lmleon,lmleonbeta))
+summary(lmleonbeta)
+
+```
+
+
+#### **(e) Discutir la utilización de la transformación arcoseno en el modelo del apartado (d) del ejercicio 2.**
+
+La transformación de arcoseno (también llamada transformación de raíz cuadrada de arcoseno o transformación angular) se calcula como dos veces el arcoseno de la raíz cuadrada de la proporción. El efecto de la transformación arcoseno es similar al logit, en el sentido de que extrae los extremos de la distribución, pero no en la medida en que lo hace el logit.
+La utilización del arcoseno en el modelo de predicción de edad ayuda a tener un modelo que permite mejores predicciones cuando la edad de las leonas aumenta que es donde se puede romper la linealidad. 
+
+```{r, echo = FALSE}
+modeloarticulo <- lm(age ~ I(asin(prop.black)), data = leonas10)
+sintrans <- lm(age ~ prop.black, data = leonas10)
+par(mfrow = c(2,2))
+plot(sintrans, main = 'Sin tranformar')
+par(mfrow = c(2,2))
+plot(modeloarticulo, main = 'Modelo paper')
+# Crear el gráfico
+ggplot(leonas10, aes(x = prop.black, y = age)) +
+  geom_point(color = "blue", size = 2, alpha = 0.5) +  # Añadir la nube de puntos
+  geom_smooth(aes(color = "Modelo transformado", linetype = "Modelo transformado"), method = "lm", formula = y ~ asin(sqrt(x)), se = FALSE) +  # Añadir la línea de regresión del modelo transformado
+  geom_smooth(aes(color = "Modelo sin transformación", linetype = "Modelo sin transformación"), method = "lm", formula = y ~ x, se = FALSE) +  # Añadir la línea de regresión del modelo sin transformar
+  scale_color_manual(name = "Modelos", values = c("Modelo transformado" = "red", "Modelo sin transformación" = "green")) +  # Añadir una leyenda para los colores
+  scale_linetype_manual(name = "Modelos", values = c("Modelo transformado" = "solid", "Modelo sin transformación" = "dashed")) +  # Añadir una leyenda para los tipos de línea
+  labs(title = "Líneas de regresión para modelos con y sin transformación", x = "Propotion black", y = "Edad")  # Añadir etiquetas de título y ejes
+
+
+```
+
+

@@ -1,0 +1,925 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={RMM PEC1},
+  pdfauthor={Luis Cervela},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{RMM PEC1}
+\author{Luis Cervela}
+\date{2023-05-03}
+
+\begin{document}
+\maketitle
+
+\hypertarget{ejercicio-1-35-pt.}{%
+\subsection{Ejercicio 1 (35 pt.)}\label{ejercicio-1-35-pt.}}
+
+Un grupo de científicos norteamericanos están interesados en encontrar
+un hábitat adecuado para reintroducir una especie rara de escarabajos
+tigre, llamada cicindela dorsalis dorsalis, los cuales viven en playas
+de arena de la costa del Atlántico Norte. Se muestrearon 12 playas y se
+midió la densidad de estos escarabajos tigre. Adicionalmente se midieron
+una serie de factores bióticos y abióticos tales como la exposición a
+las olas, tamaño de la partícula de arena, pendiente de la playa y
+densidad de los anfípodos depredadores. Los datos se hallan en la hoja
+de cálculo cicindela.xlsx.
+
+\hypertarget{a-ajustar-un-modelo-de-regresiuxf3n-lineal-muxfaltiple-que-estime-todos-los-coeficientes-de-regresiuxf3n-parciales-referentes-a-todas-las-variables-regresoras-y-el-intercepto.}{%
+\paragraph{\texorpdfstring{\textbf{(a) Ajustar un modelo de regresión
+lineal múltiple que estime todos los coeficientes de regresión parciales
+referentes a todas las variables regresoras y el
+intercepto}.}{(a) Ajustar un modelo de regresión lineal múltiple que estime todos los coeficientes de regresión parciales referentes a todas las variables regresoras y el intercepto.}}\label{a-ajustar-un-modelo-de-regresiuxf3n-lineal-muxfaltiple-que-estime-todos-los-coeficientes-de-regresiuxf3n-parciales-referentes-a-todas-las-variables-regresoras-y-el-intercepto.}}
+
+Primero voy a cargar los datos como un data frame
+
+Muestro los primeros 6 reultados
+
+\begin{longtable}[]{@{}rrrrr@{}}
+\toprule\noalign{}
+BeetleDensity & WaveExposure & Sandparticlesize & BeachSteepness &
+AmphipodDensity \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+13 & 5 & 2 & 17 & 14 \\
+12 & 4 & 2 & 8 & 16 \\
+54 & 10 & 7 & 15 & 6 \\
+19 & 9 & 4 & 7 & 14 \\
+37 & 8 & 6 & 6 & 8 \\
+2 & 4 & 1 & 9 & 17 \\
+\end{longtable}
+
+Una vez cagados y explorados los datos realizo un modelo de regresión
+con la función lm y obtengo los coeficientes con la función sum()
+
+\begin{verbatim}
+
+Call:
+lm(formula = BeetleDensity ~ WaveExposure + Sandparticlesize + 
+    BeachSteepness + AmphipodDensity, data = cicin_df)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.3004 -2.7038  0.0795  2.6017  5.3924 
+
+Coefficients:
+                 Estimate Std. Error t value Pr(>|t|)  
+(Intercept)       14.9531    17.2661   0.866   0.4152  
+WaveExposure       0.9123     1.0935   0.834   0.4317  
+Sandparticlesize   3.8970     1.1690   3.334   0.0125 *
+BeachSteepness     0.6511     0.4530   1.437   0.1938  
+AmphipodDensity   -1.5624     0.6610  -2.364   0.0501 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 4.513 on 7 degrees of freedom
+Multiple R-squared:  0.9578,    Adjusted R-squared:  0.9337 
+F-statistic: 39.71 on 4 and 7 DF,  p-value: 6.727e-05
+\end{verbatim}
+
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-3}Intercepto y todos los coeficientes de regresión del modelo}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+  & Estimate & Std. Error & t value & Pr(>|t|)\\
+\hline
+(Intercept) & 14.9531059 & 17.2660810 & 0.8660394 & 0.4151628\\
+\hline
+WaveExposure & 0.9123102 & 1.0934972 & 0.8343050 & 0.4316560\\
+\hline
+Sandparticlesize & 3.8970324 & 1.1689683 & 3.3337366 & 0.0125267\\
+\hline
+BeachSteepness & 0.6511095 & 0.4529741 & 1.4374098 & 0.1937586\\
+\hline
+AmphipodDensity & -1.5623525 & 0.6610160 & -2.3635624 & 0.0500782\\
+\hline
+\end{tabular}
+\end{table}
+
+\hypertarget{es-significativo-el-modelo-obtenido-quuxe9-test-estaduxedstico-se-emplea-para-contestar-a-esta-pregunta.-plantear-la-hipuxf3tesis-nula-y-la-alternativa-del-test.}{%
+\subparagraph{\texorpdfstring{\textbf{¿Es significativo el modelo
+obtenido? ¿Qué test estadístico se emplea para contestar a esta
+pregunta?. Plantear la hipótesis nula y la alternativa del
+test.}}{¿Es significativo el modelo obtenido? ¿Qué test estadístico se emplea para contestar a esta pregunta?. Plantear la hipótesis nula y la alternativa del test.}}\label{es-significativo-el-modelo-obtenido-quuxe9-test-estaduxedstico-se-emplea-para-contestar-a-esta-pregunta.-plantear-la-hipuxf3tesis-nula-y-la-alternativa-del-test.}}
+
+Para determinar si el modelo es significativo observamos el valor F y el
+valor p asociado al estadístico F en la salida del modelo. El
+estadístico F se utiliza para evaluar la hipótesis nula de que todos los
+coeficientes de regresión (excepto el intercepto) son iguales a cero, lo
+que implicaría que las variables independientes no tienen un efecto
+significativo en la variable dependiente.
+
+En este caso, el estadístico \textbf{F es 39.71}, y el valor \textbf{p
+asociado es 6.727e-05} (muy pequeño, cercano a 0).
+
+Las hipótesis para el test F son:
+
+\textbf{Hipótesis nula (H0)}: Todos los coeficientes de regresión
+parciales (excepto el intercepto) son iguales a cero (no hay relación
+entre las variables independientes y la variable dependiente).
+
+\textbf{Hipótesis alternativa (H1)}: Al menos uno de los coeficientes de
+regresión parciales es diferente de cero (hay una relación entre al
+menos una de las variables independientes y la variable dependiente).
+
+Dado que el valor p del estadístico F es muy pequeño (6.727e-05), se
+puede rechazar la hipótesis nula a favor de la hipótesis alternativa.
+Esto indica que el modelo es significativo y que al menos una de las
+variables independientes tiene un efecto significativo en la variable
+dependiente (BeetleDensity).
+
+Además, puedes observar el coeficiente de determinación (R\^{}2) y el
+coeficiente de determinación ajustado (R\^{}2 ajustado) para evaluar la
+calidad del modelo. En este caso, el \textbf{R\^{}2 es 0.9578} y el
+\textbf{R\^{}2 ajustado es 0.9337}, lo que indica que el modelo explica
+un alto porcentaje de la variabilidad en la densidad de escarabajo
+
+\hypertarget{quuxe9-variables-han-salido-significativas-para-un-nivel-de-significaciuxf3n-ux3b1-0.10}{%
+\subparagraph{\texorpdfstring{\textbf{¿Qué variables han salido
+significativas para un nivel de significación α =
+0.10?}}{¿Qué variables han salido significativas para un nivel de significación α = 0.10?}}\label{quuxe9-variables-han-salido-significativas-para-un-nivel-de-significaciuxf3n-ux3b1-0.10}}
+
+Solamente las variable AmphipodDensity (p valor = 0.0501) y
+Sandparticlesize (p valor = 0.0125)
+
+\hypertarget{b-calcular-los-intervalos-de-confianza-al-90-y-95-para-el-paruxe1metro-que-acompauxf1a-a-la-variable-amphipoddensity.-utilizando-suxf3lo-estos-intervalos-quuxe9-podruxedamos-haber-deducido-sobre-el-pvalor-para-la-densidad-de-los-anfuxedpodos-depredadores-en-el-resumen-del-modelo-de-regresiuxf3n-quuxe9-interpretaciuxf3n-pruxe1ctica-tiene-este-paruxe1metro-ux3b24}{%
+\paragraph{\texorpdfstring{\textbf{(b) Calcular los intervalos de
+confianza al 90 y 95\% para el parámetro que acompaña a la variable
+AmphipodDensity. Utilizando sólo estos intervalos, ¿qué podríamos haber
+deducido sobre el pvalor para la densidad de los anfípodos depredadores
+en el resumen del modelo de regresión? ¿Qué interpretación práctica
+tiene este parámetro
+β4?}}{(b) Calcular los intervalos de confianza al 90 y 95\% para el parámetro que acompaña a la variable AmphipodDensity. Utilizando sólo estos intervalos, ¿qué podríamos haber deducido sobre el pvalor para la densidad de los anfípodos depredadores en el resumen del modelo de regresión? ¿Qué interpretación práctica tiene este parámetro β4?}}\label{b-calcular-los-intervalos-de-confianza-al-90-y-95-para-el-paruxe1metro-que-acompauxf1a-a-la-variable-amphipoddensity.-utilizando-suxf3lo-estos-intervalos-quuxe9-podruxedamos-haber-deducido-sobre-el-pvalor-para-la-densidad-de-los-anfuxedpodos-depredadores-en-el-resumen-del-modelo-de-regresiuxf3n-quuxe9-interpretaciuxf3n-pruxe1ctica-tiene-este-paruxe1metro-ux3b24}}
+
+\begin{verbatim}
+Intervalo de confianza al 90% para AmphipodDensity: -2.8147 -0.31 
+\end{verbatim}
+
+\begin{verbatim}
+Intervalo de confianza al 95% para AmphipodDensity: -3.1254 7e-04 
+\end{verbatim}
+
+Dado que ambos intervalos de confianza no incluyen el valor cero,
+podemos deducir que el valor p asociado al coeficiente de
+AmphipodDensity es menor que 0.10 y 0.05. En otras palabras, la variable
+AmphipodDensity es significativa tanto al nivel de significación del
+90\% como al 95\%. sin embrago, el hecho de que el límite superior al
+95\% esté tan cerca de cero (7e-04) sugiere que la relación entre
+AmphipodDensity y BeetleDensity podría ser débil o menos segura de lo
+que indicaría un valor p más pequeño.
+
+\begin{equation}
+\operatorname{BeetleDensity} = \alpha + \beta_{1}(\operatorname{WaveExposure}) + \beta_{2}(\operatorname{Sandparticlesize}) + \beta_{3}(\operatorname{BeachSteepness}) + \beta_{4}(\operatorname{AmphipodDensity}) + \epsilon
+\end{equation}
+
+El parámetro β4 corresponde al coeficiente asociado con la variable
+AmphipodDensity. Este coeficiente nos indica la relación entre la
+densidad de anfípodos y la densidad de escarabajos (BeetleDensity)
+mientras se mantienen constantes las otras variables en el modelo
+(exposición a las olas = Wave Exposure, tamaño de partículas de arena =
+Sandparticle size y pendiente de la playa = beach steepness).
+
+La interpretación práctica de β4 es la siguiente: por cada unidad de
+incremento en la densidad de anfípodos (AmphipodDensity), se espera que
+la densidad de escarabajos (BeetleDensity) cambie en β4 unidades,
+asumiendo que las otras variables del modelo (exposición a las olas,
+tamaño de partículas de arena y pendiente de la playa) se mantienen
+constantes.
+
+En este caso, el \textbf{coeficiente estimado para AmphipodDensity es
+-1.5624}, lo que indica que un aumento en la densidad de anfípodos
+depredadores está asociado con una disminución en la densidad de
+escarabajos.
+
+\hypertarget{c-estudiar-la-posible-multicolinealidad-del-modelo-con-todas-las-regresoras-calculando-los-vifs.}{%
+\paragraph{\texorpdfstring{\textbf{(c) Estudiar la posible
+multicolinealidad del modelo con todas las regresoras calculando los
+VIFs.}}{(c) Estudiar la posible multicolinealidad del modelo con todas las regresoras calculando los VIFs.}}\label{c-estudiar-la-posible-multicolinealidad-del-modelo-con-todas-las-regresoras-calculando-los-vifs.}}
+
+El Factor de Inflación de la Varianza (VIF) es una medida que puede
+ayudarte a identificar la multicolinealidad en un modelo de regresión.
+La multicolinealidad ocurre cuando las variables independientes en un
+modelo de regresión están altamente correlacionadas entre sí, lo que
+puede hacer que los coeficientes de regresión sean inestables y
+difíciles de interpretar.
+
+\begin{verbatim}
+    WaveExposure Sandparticlesize   BeachSteepness  AmphipodDensity 
+        3.771652         3.398998         1.158425         5.119632 
+\end{verbatim}
+
+Generalmente, se considera que un VIF mayor a 5 o 10 indica que la
+multicolinealidad podría ser un problema en el modelo. En este caso,
+todos los VIFs están por debajo de 10, pero el VIF para AmphipodDensity
+está cerca de 5, lo que sugiere que podría haber cierta
+multicolinealidad en el modelo relacionada con esta variable.
+
+Se podrías considerar explorar la correlación entre AmphipodDensity y
+las otras variables independientes para entender mejor su relación.
+
+\hypertarget{d-considerar-el-modelo-muxe1s-reducido-que-no-incluye-las-variables-exposiciuxf3n-a-las-olas-y-la-pendiente-de-la-playa-y-decidir-si-nos-podemos-quedar-con-este-modelo-reducido-mediante-un-contraste-de-modelos-con-el-test-f-para-un-ux3b1-0.05.-escribir-en-forma-paramuxe9trica-las-hipuxf3tesis-h0-y-h1-de-este-contraste.-comparar-el-ajuste-de-ambos-modelos.}{%
+\paragraph{\texorpdfstring{\textbf{(d) Considerar el modelo más reducido
+que no incluye las variables exposición a las olas y la pendiente de la
+playa y decidir si nos podemos quedar con este modelo reducido mediante
+un contraste de modelos con el test F para un α = 0.05. Escribir en
+forma paramétrica las hipótesis H0 y H1 de este contraste. Comparar el
+ajuste de ambos
+modelos.}}{(d) Considerar el modelo más reducido que no incluye las variables exposición a las olas y la pendiente de la playa y decidir si nos podemos quedar con este modelo reducido mediante un contraste de modelos con el test F para un α = 0.05. Escribir en forma paramétrica las hipótesis H0 y H1 de este contraste. Comparar el ajuste de ambos modelos.}}\label{d-considerar-el-modelo-muxe1s-reducido-que-no-incluye-las-variables-exposiciuxf3n-a-las-olas-y-la-pendiente-de-la-playa-y-decidir-si-nos-podemos-quedar-con-este-modelo-reducido-mediante-un-contraste-de-modelos-con-el-test-f-para-un-ux3b1-0.05.-escribir-en-forma-paramuxe9trica-las-hipuxf3tesis-h0-y-h1-de-este-contraste.-comparar-el-ajuste-de-ambos-modelos.}}
+
+Para realizar un contraste de modelos con el test F para un nivel de
+significación α = 0.05, utilizamos la función anova() en R, que compara
+los dos modelos.
+
+Las hipótesis para el contraste de modelos usando el test F son:
+
+\textbf{Hipótesis nula (H0)}: El modelo reducido es suficiente para
+explicar la variabilidad en la densidad de escarabajos (BeetleDensity).
+Es decir, los coeficientes de las variables excluidas (WaveExposure y
+BeachSteepness) son iguales a cero.
+
+\textbf{Hipótesis alternativa (H1)}: El modelo completo, que incluye las
+variables WaveExposure y BeachSteepness, es significativamente mejor
+para explicar la variabilidad en la densidad de escarabajos que el
+modelo reducido.
+
+\begin{verbatim}
+Analysis of Variance Table
+
+Model 1: BeetleDensity ~ Sandparticlesize + AmphipodDensity
+Model 2: BeetleDensity ~ WaveExposure + Sandparticlesize + BeachSteepness + 
+    AmphipodDensity
+  Res.Df    RSS Df Sum of Sq      F Pr(>F)
+1      9 192.19                           
+2      7 142.59  2     49.61 1.2178 0.3517
+\end{verbatim}
+
+El valor p del test \textbf{F es 0.3517}. Dado que el nivel de
+significación es α = 0.05, y el valor p (0.3517) es mayor que α, no
+puedes rechazar la hipótesis nula. Esto indica que el modelo reducido,
+que excluye las variables WaveExposure y BeachSteepness, es suficiente
+para explicar la variabilidad en la densidad de escarabajos
+(BeetleDensity).
+
+Además al comparar el ajuste de ambos modelos vemos que son
+pragmáticamente iguales
+
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+Modelo & R.cuadrado & R.cuadrado.ajustado \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Mocelo completo & 0.9577858 & 0.9336635 \\
+Modelo reducido & 0.9430983 & 0.9304535 \\
+\end{longtable}
+
+Dado que los resultados del test F que realizamos antes indicaron que no
+hay una diferencia significativa entre estos, y considerando la
+similitud en los ajustes de los modelos, es razonable quedarse con el
+modelo reducido. El modelo reducido es más simple y, según la
+información que tenemos, explica la variabilidad en la densidad de
+escarabajos de manera similar al modelo completo.
+
+\hypertarget{e-calcular-y-dibujar-una-regiuxf3n-de-confianza-conjunta-al-95-para-los-paruxe1metros-asociados-con-sandparticlesize-y-amphipoddensity-con-el-modelo-que-resulta-del-apartado-anterior.}{%
+\paragraph{\texorpdfstring{\textbf{(e) Calcular y dibujar una región de
+confianza conjunta al 95\% para los parámetros asociados con
+Sandparticlesize y AmphipodDensity con el modelo que resulta del
+apartado
+anterior}.}{(e) Calcular y dibujar una región de confianza conjunta al 95\% para los parámetros asociados con Sandparticlesize y AmphipodDensity con el modelo que resulta del apartado anterior.}}\label{e-calcular-y-dibujar-una-regiuxf3n-de-confianza-conjunta-al-95-para-los-paruxe1metros-asociados-con-sandparticlesize-y-amphipoddensity-con-el-modelo-que-resulta-del-apartado-anterior.}}
+
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+El punto (0,0) está fuera de la elipse de confianza conjunta al 95\%
+para los coeficientes de las variables Sandparticlesize y
+AmphipodDensity, esto indica que no es probable que ambos coeficientes
+sean simultáneamente iguales a cero. En otras palabras, sugiere que al
+menos una de las dos variables (o ambas) tiene un efecto significativo
+en la variable de respuesta (BeetleDensity), considerando el nivel de
+confianza del 95\%.
+
+\hypertarget{f-con-el-modelo-reducido-del-apartado-d-predecir-en-forma-de-intervalo-de-confianza-al-95-la-densidad-de-los-escarabajos-tigre-previsible-para-una-playa-cercana-a-un-conocido-hotel-donde-el-tamauxf1o-de-partuxedcula-de-arena-es-5-y-la-densidad-de-anfuxedpodos-depredadores-es-11.-comprobar-previamente-que-los-valores-observados-no-suponen-una-extrapolaciuxf3n.}{%
+\paragraph{\texorpdfstring{\textbf{(f) Con el modelo reducido del
+apartado (d), predecir en forma de intervalo de confianza al 95\% la
+densidad de los escarabajos tigre previsible para una playa cercana a un
+conocido hotel donde el tamaño de partícula de arena es 5 y la densidad
+de anfípodos depredadores es 11. Comprobar previamente que los valores
+observados no suponen una
+extrapolación.}}{(f) Con el modelo reducido del apartado (d), predecir en forma de intervalo de confianza al 95\% la densidad de los escarabajos tigre previsible para una playa cercana a un conocido hotel donde el tamaño de partícula de arena es 5 y la densidad de anfípodos depredadores es 11. Comprobar previamente que los valores observados no suponen una extrapolación.}}\label{f-con-el-modelo-reducido-del-apartado-d-predecir-en-forma-de-intervalo-de-confianza-al-95-la-densidad-de-los-escarabajos-tigre-previsible-para-una-playa-cercana-a-un-conocido-hotel-donde-el-tamauxf1o-de-partuxedcula-de-arena-es-5-y-la-densidad-de-anfuxedpodos-depredadores-es-11.-comprobar-previamente-que-los-valores-observados-no-suponen-una-extrapolaciuxf3n.}}
+
+Primero comprobamos que los valores estén en el rango del modelo.
+
+\begin{verbatim}
+El valor de Sandparticlesize (5) NO supone una extrapolación.
+\end{verbatim}
+
+\begin{verbatim}
+El valor de AmphipodDensity (11) NO supone una extrapolación.
+\end{verbatim}
+
+\begin{longtable}[]{@{}rrr@{}}
+\toprule\noalign{}
+fit & lwr & upr \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+30.76569 & 26.05199 & 35.47939 \\
+\end{longtable}
+
+El intervalo de confianza al 95\% para la predicción de la densidad de
+escarabajos tigre en la playa cercana al hotel, utilizando el modelo
+reducido, es de (26.05, 35.48). Esto significa que, con un 95\% de
+confianza, podemos esperar que la densidad de escarabajos tigre en esta
+playa esté entre 26 y 35.
+
+\hypertarget{ejercicio-2-35-pt.}{%
+\subsection{Ejercicio 2 (35 pt.)}\label{ejercicio-2-35-pt.}}
+
+En el trabajo de Whitman et al.~(2004) se estudia, entre otras cosas, la
+relación entre la edad de los leones y la proporción oscura en la
+coloración de sus narices. En el archivo lions.csv disponemos de los
+datos de 105 leones machos y hembras de dos áreas de Tanzania, el parque
+nacional de Serengueti y el cráter del Ngorongoro, entre 1999 y 2002.
+Las variables registradas son la edad conocida de cada animal y la
+proporción oscura de su nariz a partir de fotografías tratadas
+digitalmente (ver figura adjunta). En la figura 1 se reproduce el
+gráfico de dispersión de la figura 4 del artículo con el cambio de
+coloración de la nariz según la edad de machos y hembras en las dos
+poblaciones separadas. \textbf{Nota: Los datos se han extraído
+principalmente del gráfico del artículo de Whitman et al.~(2004) y por
+lo tanto son aproximados. Algunos paquetes de R contienen un data.frame
+con una parte de estos datos. Por ejemplo LionNoses del paquete abd
+contiene los datos de todos los machos. En consecuencia, los resultados
+numéricos de vuestro análisis pueden ser ligeramente distintos a los del
+trabajo original.}
+
+\hypertarget{a-reproducir-el-gruxe1fico-de-dispersiuxf3n-de-la-figura-1-figura-4d-del-artuxedculo-lo-muxe1s-fielmente-posible-al-original-ya-que-se-trata-de-una-exigencia-de-los-editores-de-la-revista.}{%
+\paragraph{\texorpdfstring{\textbf{(a) Reproducir el gráfico de
+dispersión de la figura 1 (figura 4d del artículo) lo más fielmente
+posible al original, ya que se trata de una exigencia de los editores de
+la
+revista.}}{(a) Reproducir el gráfico de dispersión de la figura 1 (figura 4d del artículo) lo más fielmente posible al original, ya que se trata de una exigencia de los editores de la revista.}}\label{a-reproducir-el-gruxe1fico-de-dispersiuxf3n-de-la-figura-1-figura-4d-del-artuxedculo-lo-muxe1s-fielmente-posible-al-original-ya-que-se-trata-de-una-exigencia-de-los-editores-de-la-revista.}}
+
+\begin{verbatim}
+Muestro los primeros 6 reultados de la tabla y la reproducción del gráfico del articulo
+\end{verbatim}
+
+\begin{longtable}[]{@{}rrll@{}}
+\toprule\noalign{}
+prop.black & age & sex & area \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0.21 & 1.1 & M & S \\
+0.14 & 1.5 & M & S \\
+0.11 & 1.9 & M & S \\
+0.13 & 2.2 & M & S \\
+0.12 & 2.6 & M & S \\
+0.13 & 3.2 & M & S \\
+\end{longtable}
+
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-14-1.pdf}
+
+\hypertarget{b-en-el-artuxedculo-se-destacan-los-siguientes-resultadosafter-controlling-for-age-there-was-no-effect-of-sex-on-nose-colour-in-the-serengeti-but-ngorongoro-males-had-lighter-noses-than-ngorongoro-females.-ajustar-un-primer-modelo-sin-considerar-la-posible-interacciuxf3n-entre-el-sexo-y-las-uxe1reas-y-contrastar-si-el-sexo-es-significativo-en-el-modelo-asuxed-ajustado-y-en-los-modelos-separados-seguxfan-el-uxe1rea.}{%
+\paragraph{\texorpdfstring{\textbf{(b) En el artículo se destacan los
+siguientes resultados:``After controlling for age, there was no effect
+of sex on nose colour in the Serengeti, but Ngorongoro males had lighter
+noses than Ngorongoro females''. Ajustar un primer modelo sin considerar
+la posible interacción entre el sexo y las áreas y contrastar si el sexo
+es significativo en el modelo así ajustado y en los modelos separados
+según el
+área.}}{(b) En el artículo se destacan los siguientes resultados:``After controlling for age, there was no effect of sex on nose colour in the Serengeti, but Ngorongoro males had lighter noses than Ngorongoro females''. Ajustar un primer modelo sin considerar la posible interacción entre el sexo y las áreas y contrastar si el sexo es significativo en el modelo así ajustado y en los modelos separados según el área.}}\label{b-en-el-artuxedculo-se-destacan-los-siguientes-resultadosafter-controlling-for-age-there-was-no-effect-of-sex-on-nose-colour-in-the-serengeti-but-ngorongoro-males-had-lighter-noses-than-ngorongoro-females.-ajustar-un-primer-modelo-sin-considerar-la-posible-interacciuxf3n-entre-el-sexo-y-las-uxe1reas-y-contrastar-si-el-sexo-es-significativo-en-el-modelo-asuxed-ajustado-y-en-los-modelos-separados-seguxfan-el-uxe1rea.}}
+
+\begin{verbatim}
+Este es el resumen del modelo completo
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+lm(formula = prop.black ~ sex + area + age, data = lions_df)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.30265 -0.09116  0.00592  0.10049  0.32242 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.023324   0.044314   0.526   0.5998    
+sexM        -0.068416   0.030662  -2.231   0.0279 *  
+areaS        0.067473   0.034106   1.978   0.0506 .  
+age          0.074464   0.004396  16.939   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.1367 on 101 degrees of freedom
+Multiple R-squared:  0.7713,    Adjusted R-squared:  0.7645 
+F-statistic: 113.5 on 3 and 101 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+En el modelo completo, la variable sex tiene un valor \textbf{p de
+0.0279}, lo que indica que hay una diferencia significativa en la
+proporción de la nariz que es negra entre machos y hembras después de
+controlar el área y la edad. El coeficiente estimado para la variable
+sexM es -0.068416, lo que indica que los machos tienen una proporción de
+nariz negra 0.068416 menor que las hembras después de controlar el área
+y la edad.
+
+Ahora generamos los modelos teniendo en cuenta el efecto del area
+
+\begin{verbatim}
+Este es el resumen del modelo para el area del Serengeti
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+lm(formula = prop.black ~ sex + age, data = subset(lions_df, 
+    area == "S"))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.32208 -0.08310  0.00054  0.09561  0.33087 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.064161   0.034787   1.844   0.0688 .  
+sexM        -0.030123   0.036358  -0.829   0.4098    
+age          0.077495   0.004805  16.127   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.1316 on 81 degrees of freedom
+Multiple R-squared:  0.8065,    Adjusted R-squared:  0.8017 
+F-statistic: 168.8 on 2 and 81 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{verbatim}
+Equacion Serengeti: prop.black = 0.06416076 + -0.0301229 * sex + 0.077495 age
+\end{verbatim}
+
+\begin{verbatim}
+Este es el modelo para el area del Ngorongoro
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+lm(formula = prop.black ~ sex + age, data = subset(lions_df, 
+    area == "N"))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.20193 -0.11281 -0.02567  0.14511  0.23160 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  0.04337    0.09071   0.478 0.638321    
+sexM        -0.16748    0.07885  -2.124 0.047776 *  
+age          0.07912    0.01681   4.707 0.000176 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.1531 on 18 degrees of freedom
+Multiple R-squared:  0.5538,    Adjusted R-squared:  0.5042 
+F-statistic: 11.17 on 2 and 18 DF,  p-value: 0.000701
+\end{verbatim}
+
+\begin{verbatim}
+Equacion Ngorongoro: prop.black = 0.04336953 + -0.1674816 * sex + 0.07911811 age
+\end{verbatim}
+
+En el modelo ajustado solo para el área del Serengeti, la variable sex
+no es significativa (valor p: 0.4098), lo que indica que no hay una
+diferencia significativa en la proporción de la nariz que es negra entre
+machos y hembras en esta área después de controlar la edad.
+
+En el modelo ajustado solo para el área de Ngorongoro, la variable sex
+es significativa (valor p: 0.047776), lo que indica que hay una
+diferencia significativa en la proporción de la nariz que es negra entre
+machos y hembras en esta área después de controlar la edad. El
+coeficiente estimado para la variable sexM es -0.1674816, lo que indica
+que los machos tienen una nariz más clara que las hembras en Ngorongoro.
+
+Estos resultados están en consonancia con lo afirmado por el articulo
+\textbf{After controlling for age, there was no effect of sex on nose
+colour in the Serengeti, but Ngorongoro males had lighter noses than
+Ngorongoro females}
+
+\hypertarget{c-otro-resultado-destacado-es-que-para-los-machos-hay-diferencias-seguxfan-el-uxe1rea.-contrastar-este-resultado-y-dibujar-las-rectas-de-regresiuxf3n-para-las-dos-uxe1reas-que-se-obtienen-del-modelo.}{%
+\paragraph{\texorpdfstring{\textbf{(c) Otro resultado destacado es que
+para los machos hay diferencias según el área. Contrastar este resultado
+y dibujar las rectas de regresión para las dos áreas que se obtienen del
+modelo.}}{(c) Otro resultado destacado es que para los machos hay diferencias según el área. Contrastar este resultado y dibujar las rectas de regresión para las dos áreas que se obtienen del modelo.}}\label{c-otro-resultado-destacado-es-que-para-los-machos-hay-diferencias-seguxfan-el-uxe1rea.-contrastar-este-resultado-y-dibujar-las-rectas-de-regresiuxf3n-para-las-dos-uxe1reas-que-se-obtienen-del-modelo.}}
+
+\begin{verbatim}
+Modelo de regresión para los Machos
+\end{verbatim}
+
+\begin{verbatim}
+
+Call:
+lm(formula = prop.black ~ area + age, data = lionsM)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.16192 -0.08356 -0.01158  0.08842  0.22278 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -0.10826    0.08831  -1.226   0.2301    
+areaS        0.14411    0.06402   2.251   0.0321 *  
+age          0.07689    0.01126   6.827  1.7e-07 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.1162 on 29 degrees of freedom
+Multiple R-squared:  0.6798,    Adjusted R-squared:  0.6577 
+F-statistic: 30.78 on 2 and 29 DF,  p-value: 6.745e-08
+\end{verbatim}
+
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-17-1.pdf}
+
+En el modelo ajustado para los machos, la variable area es significativa
+(valor p: 0.0321), lo que indica que hay una diferencia significativa en
+la proporción de la nariz que es negra entre machos del Serengeti y de
+Ngorongoro. El coeficiente estimado para la variable areaS es 0.14411 ,
+lo que indica que los machos sel Sremgeti tienen una nariz más oscura
+que las machos de Ngorongoro. Los resultados est están en consonancia
+con los del artículo. \emph{(After controlling for age, there was no
+effect of sex on nose colour in the Serengeti, but Ngorongoro males had
+lighter noses than Ngorongoro females (P = 0.0485) and Serengeti males
+(P = 0.0281))}
+
+\hypertarget{d-en-la-tabla-1-del-artuxedculo-de-whitman-et-al.-se-dan-los-intervalos-de-confianza-al-95-al-75-y-al-50-para-predecir-la-edad-de-una-leona-de-10-auxf1os-o-menos-seguxfan-su-proporciuxf3n-de-pigmentaciuxf3n-oscura-en-la-nariz.-la-primera-cuestiuxf3n-es-sirven-para-esto-los-modelos-estudiados-en-los-apartados-anteriores-reproducir-la-fila-de-la-tabla-1-para-una-proporciuxf3n-del-0.50-seguxfan-el-modelo-que-proponen-en-el-artuxedculo.aclarar-un-detalle-lo-que-en-la-tabla-1-del-artuxedculo-se-llama-s.e.-standard-error-quuxe9-es-exactamente-nota-recordemos-tambiuxe9n-aquuxed-que-los-resultados-pueden-ser-ligeramente-distintos-a-los-del-artuxedculo-por-la-utilizaciuxf3n-de-datos-aproximados.}{%
+\paragraph{\texorpdfstring{\textbf{(d) En la tabla 1 del artículo de
+Whitman et al.~se dan los intervalos de confianza al 95 \%, al 75\% y al
+50\% para predecir la edad de una leona de 10 años o menos según su
+proporción de pigmentación oscura en la nariz. La primera cuestión es:
+¿sirven para esto los modelos estudiados en los apartados anteriores?
+Reproducir la fila de la tabla 1 para una proporción del 0.50 según el
+modelo que proponen en el artículo.}Aclarar un detalle: lo que en la
+tabla 1 del artículo se llama s.e., standard error ¿qué es exactamente?
+\emph{Nota: Recordemos también aquí que los resultados pueden ser
+ligeramente distintos a los del artículo por la utilización de datos
+aproximados.}}{(d) En la tabla 1 del artículo de Whitman et al.~se dan los intervalos de confianza al 95 \%, al 75\% y al 50\% para predecir la edad de una leona de 10 años o menos según su proporción de pigmentación oscura en la nariz. La primera cuestión es: ¿sirven para esto los modelos estudiados en los apartados anteriores? Reproducir la fila de la tabla 1 para una proporción del 0.50 según el modelo que proponen en el artículo.Aclarar un detalle: lo que en la tabla 1 del artículo se llama s.e., standard error ¿qué es exactamente? Nota: Recordemos también aquí que los resultados pueden ser ligeramente distintos a los del artículo por la utilización de datos aproximados.}}\label{d-en-la-tabla-1-del-artuxedculo-de-whitman-et-al.-se-dan-los-intervalos-de-confianza-al-95-al-75-y-al-50-para-predecir-la-edad-de-una-leona-de-10-auxf1os-o-menos-seguxfan-su-proporciuxf3n-de-pigmentaciuxf3n-oscura-en-la-nariz.-la-primera-cuestiuxf3n-es-sirven-para-esto-los-modelos-estudiados-en-los-apartados-anteriores-reproducir-la-fila-de-la-tabla-1-para-una-proporciuxf3n-del-0.50-seguxfan-el-modelo-que-proponen-en-el-artuxedculo.aclarar-un-detalle-lo-que-en-la-tabla-1-del-artuxedculo-se-llama-s.e.-standard-error-quuxe9-es-exactamente-nota-recordemos-tambiuxe9n-aquuxed-que-los-resultados-pueden-ser-ligeramente-distintos-a-los-del-artuxedculo-por-la-utilizaciuxf3n-de-datos-aproximados.}}
+
+El error estándar (s.e.) en la tabla se refiere a la desviación estándar
+de los errores de estimación. Es una medida de la variabilidad en las
+estimaciones de la edad basada en el modelo de regresión ajustado. La
+s.e. nos da una idea de la precisión de las estimaciones de edad
+proporcionadas por el modelo.
+
+\begin{longtable}[]{@{}llll@{}}
+\caption{Estimaciones para Prop.black = 0.50}\tabularnewline
+\toprule\noalign{}
+Edad (SE) & 95\% p.i. & 75\% p.i. & 50\% p.i. \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Edad (SE) & 95\% p.i. & 75\% p.i. & 50\% p.i. \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+5.12 (1.25) & 2.66 - 7.59 & 3.69 - 6.55 & 4.28 - 5.96 \\
+\end{longtable}
+
+\hypertarget{ejercicio-3-30-pt.}{%
+\subsection{Ejercicio 3 (30 pt.)}\label{ejercicio-3-30-pt.}}
+
+\hypertarget{a-verificar-las-hipuxf3tesis-de-gauss-markov-y-la-normalidad-de-los-residuos-del-modelo-completo-del-apartado-b-del-ejercicio-2.-realizar-una-completa-diagnosis-del-modelo-para-ver-si-se-cumplen-las-condiciones-del-modelo-de-regresiuxf3n-normalidad-homocedasticidad.-.-.-y-estudiar-la-presencia-de-valores-atuxedpicos-de-alto-leverage-yo-puntos-influyentes.-construir-los-gruxe1ficos-correspondientes-y-justificar-su-interpretaciuxf3n.-podemos-considerar-el-modelo-ajustado-como-fiable}{%
+\paragraph{\texorpdfstring{\textbf{(a) Verificar las hipótesis de
+Gauss-Markov y la normalidad de los residuos del modelo completo del
+apartado (b) del ejercicio 2. Realizar una completa diagnosis del modelo
+para ver si se cumplen las condiciones del modelo de regresión:
+normalidad, homocedasticidad,. . . y estudiar la presencia de valores
+atípicos, de alto leverage y/o puntos influyentes. Construir los
+gráficos correspondientes y justificar su interpretación. ¿Podemos
+considerar el modelo ajustado como
+fiable?}}{(a) Verificar las hipótesis de Gauss-Markov y la normalidad de los residuos del modelo completo del apartado (b) del ejercicio 2. Realizar una completa diagnosis del modelo para ver si se cumplen las condiciones del modelo de regresión: normalidad, homocedasticidad,. . . y estudiar la presencia de valores atípicos, de alto leverage y/o puntos influyentes. Construir los gráficos correspondientes y justificar su interpretación. ¿Podemos considerar el modelo ajustado como fiable?}}\label{a-verificar-las-hipuxf3tesis-de-gauss-markov-y-la-normalidad-de-los-residuos-del-modelo-completo-del-apartado-b-del-ejercicio-2.-realizar-una-completa-diagnosis-del-modelo-para-ver-si-se-cumplen-las-condiciones-del-modelo-de-regresiuxf3n-normalidad-homocedasticidad.-.-.-y-estudiar-la-presencia-de-valores-atuxedpicos-de-alto-leverage-yo-puntos-influyentes.-construir-los-gruxe1ficos-correspondientes-y-justificar-su-interpretaciuxf3n.-podemos-considerar-el-modelo-ajustado-como-fiable}}
+
+Para verificar las hipótesis de Gauss-Markov y la normalidad de los
+residuos en el modelo de regresión, vamos a realizar un análisis
+diagnóstico completo. Utilizaremos gráficos de residuos y algunas
+pruebas estadísticas para evaluar la normalidad, la homocedasticidad y
+la presencia de valores atípicos, puntos de alto leverage y/o puntos
+influyentes.
+
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-20-1.pdf}
+\textbf{Gráfico de Residuals vs Fitted:} Esta gráfica muestra si los
+residuos tienen patrones no lineales. Podría haber una relación no
+lineal entre las variables predictoras y una variable de resultado y el
+patrón podría aparecer en este gráfico si el modelo no captura la
+relación no lineal. Si se observan residuos igualmente distribuidos
+alrededor de una línea horizontal sin patrones distinguibles, es una
+buena indicación de que no tiene relaciones no lineales.
+
+En nuestro caso se puede observar que a partir de 0.8 los residuos no se
+distribuyen de manera aleatoria lo que puede sugerir no linealidad.
+
+\textbf{Gráfico Scale-Location:} Este gráfico muestra si los residuos se
+distribuyen por igual a lo largo de los rangos de los predictores. Así
+es como se puede comprobar el supuesto de igualdad de varianza
+(homocedasticidad). Si se observa una línea horizontal con puntos de
+distribución iguales (al azar) sugiere que hay homocedasticidad.
+
+En nuestro caso parece que los residuos aumentan la distancia entre
+ellos a partir de 0.5, lo que sugiere heterocedasticidad.
+
+\textbf{Gráfico Normal Q-Q:} Si los puntos se ajustan aproximadamente a
+la línea diagonal, entonces se puede suponer que los residuos siguen una
+distribución normal.
+
+En nuestro caso los residuos parece que tienen un distribución normal.
+
+\textbf{Gráfico Residuals vs Leverage (Cook's distance):} Este gráfico
+identifica puntos influyentes, es decir, observaciones que tienen un
+impacto significativo en el ajuste del modelo. Si hay puntos que se
+destacan en términos de distancia de Cook, podrían ser motivo de
+preocupación.
+
+En nuestro caso no se observan puntos influyentes ya que todos los
+residuos aparecen dentro de la distancia de Cook.
+
+Para confirmar las observaciones podemos realizar tests estadisticos
+para confirmar si los residuos cumplen la normalidad y la
+homocedasticidad.
+
+\begin{verbatim}
+Prueba de Shapiro-Wilk (para evaluar la normalidad de los residuos)
+\end{verbatim}
+
+\begin{verbatim}
+
+    Shapiro-Wilk normality test
+
+data:  lmleon$residuals
+W = 0.9909, p-value = 0.7072
+\end{verbatim}
+
+\begin{verbatim}
+Prueba de Breusch-Pagan (para evaluar la homocedasticidad)
+\end{verbatim}
+
+\begin{verbatim}
+
+    studentized Breusch-Pagan test
+
+data:  lmleon
+BP = 10.171, df = 3, p-value = 0.01717
+\end{verbatim}
+
+\textbf{Prueba de Shapiro-Wilk:} Si el valor p es mayor que el nivel de
+significancia (por ejemplo, 0.05), entonces no hay evidencia suficiente
+para rechazar la hipótesis nula de que los residuos siguen una
+distribución normal.
+
+En nuestro caso p-value = 0.7072 lo que no nos permite rechazar la
+hipótesis nula de normalidad, lo que sugiere que los residuos siguen una
+distribución normal
+
+\textbf{Prueba de Breusch-Pagan:} Si el valor p es mayor que el nivel de
+significancia (por ejemplo, 0.05), entonces no hay evidencia suficiente
+para rechazar la hipótesis nula de homocedasticidad en los residuos.
+
+En nuestro caso p-value = 0.01717 lo que nos permite rechazar la
+hipotesis nula de homocedasticidad lo que indica que el modelo puede
+tener problemas de heterocasticidad.
+
+\hypertarget{b-teniendo-en-cuenta-que-la-variable-respuesta-de-la-regresiuxf3n-del-apartado-b-del-ejercicio-2-es-una-proporciuxf3n-presenta-alguxfan-problema-este-modelo-quuxe9-alternativas-nos-podemos-plantear-para-mejorar-el-ajuste-de-los-datos}{%
+\paragraph{\texorpdfstring{\textbf{b) Teniendo en cuenta que la variable
+respuesta de la regresión del apartado (b) del ejercicio 2 es una
+proporción, ¿presenta algún problema este modelo? ¿Qué alternativas nos
+podemos plantear para mejorar el ajuste de los
+datos?}}{b) Teniendo en cuenta que la variable respuesta de la regresión del apartado (b) del ejercicio 2 es una proporción, ¿presenta algún problema este modelo? ¿Qué alternativas nos podemos plantear para mejorar el ajuste de los datos?}}\label{b-teniendo-en-cuenta-que-la-variable-respuesta-de-la-regresiuxf3n-del-apartado-b-del-ejercicio-2-es-una-proporciuxf3n-presenta-alguxfan-problema-este-modelo-quuxe9-alternativas-nos-podemos-plantear-para-mejorar-el-ajuste-de-los-datos}}
+
+Cuando la variable dependiente es un porcentaje, es decir está acotado
+superior e inferiormente entre 0 y 1 se puede estimar un modelo de
+probabilidad lineal, sobre todo si el modelo sólo tiene valores
+intermedios. Sin embargo, cuando los porcentajes están muy próximos a 0
+o a 1 ya no se comportan como cuando están en mitad de la tabla porque
+se ``frenan'', se ``tuercen'' acotados en 0 y 1 respectivamente. Dos de
+las transformaciones estabilizadoras de varianza más comunes usadas para
+datos porcentuales son las transformaciones logit y arcoseno. En nuestro
+caso si observamos la distribución de prop.black en un boxplot vemos que
+para las hembras del Serengeti (FS) hay varias medidas próximas a los
+extremos {[}0,1{]}.
+
+La transformación de variables consiste en sustituir los valores
+originales de las variables por una función de esa variable. La
+transformación de variables con funciones matemáticas ayuda a reducir la
+asimetría de las variables, mejorando así la dispersión de valores, y a
+veces desenmascara las relaciones lineales y aditivas entre los
+predictores y el objetivo.
+
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-22-1.pdf}
+
+\hypertarget{c-aplicar-la-transformaciuxf3n-muxe1s-adecuada-a-la-variable-respuesta-del-modelo-considerado.-comparar-los-dos-modelos-con-y-sin-la-transformaciuxf3n.-quuxe9-modelo-es-mejor-justificar-la-respuesta.}{%
+\paragraph{\texorpdfstring{\textbf{(c) Aplicar la transformación más
+adecuada a la variable respuesta del modelo considerado. Comparar los
+dos modelos: con y sin la transformación. ¿Qué modelo es mejor?
+Justificar la
+respuesta.}}{(c) Aplicar la transformación más adecuada a la variable respuesta del modelo considerado. Comparar los dos modelos: con y sin la transformación. ¿Qué modelo es mejor? Justificar la respuesta.}}\label{c-aplicar-la-transformaciuxf3n-muxe1s-adecuada-a-la-variable-respuesta-del-modelo-considerado.-comparar-los-dos-modelos-con-y-sin-la-transformaciuxf3n.-quuxe9-modelo-es-mejor-justificar-la-respuesta.}}
+
+Aplicamos una transformación arcoseno y una transformación logaritmica.
+Y comparamos los ajustes con la funcion AIC() y BIC().
+
+\begin{longtable}[]{@{}lrrr@{}}
+\toprule\noalign{}
+Model & R\_cuadrado\_ajustado & AIC & BIC \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Original & 0.7644874 & -114.00625 & -100.73645 \\
+Logit & 0.7211663 & 272.66986 & 285.93966 \\
+Arcoseno & 0.7595642 & -80.99363 & -67.72383 \\
+\end{longtable}
+
+Ni la transformacion logit ni la de arcoseno mejoran el modelo en base a
+los Resultados del criterio de información de Akaike (AIC) o del
+criterio de información bayesiano (BIC). Ademas los valores R cuadrado
+son mejores para el modelo sin tranformar
+
+\hypertarget{d-realizar-una-ruxe1pida-diagnosis-del-modelo-transformado.-estamos-satisfechos-con-este-nuevo-modelo-quuxe9-otro-ajuste-nos-podemos-plantear-para-mejorar-el-modelo}{%
+\paragraph{\texorpdfstring{\textbf{(d) Realizar una rápida diagnosis del
+modelo transformado. ¿Estamos satisfechos con este nuevo modelo? ¿Qué
+otro ajuste nos podemos plantear para mejorar el
+modelo?}}{(d) Realizar una rápida diagnosis del modelo transformado. ¿Estamos satisfechos con este nuevo modelo? ¿Qué otro ajuste nos podemos plantear para mejorar el modelo?}}\label{d-realizar-una-ruxe1pida-diagnosis-del-modelo-transformado.-estamos-satisfechos-con-este-nuevo-modelo-quuxe9-otro-ajuste-nos-podemos-plantear-para-mejorar-el-modelo}}
+
+Comprobamos que los gráficos de residuos son muy similares. Los modelos
+transformados no parecen mejorar el original.
+
+Podemos usar otra transformación como la tramsformación beta. La
+trasnformación beta es usada para modelar el comportamiento de variables
+aleatorias limitadas por intervalos de longitud finita. En particular,
+es una distribución adecuada para porcentajes y proporciones.
+
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-24-1.pdf}
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-24-2.pdf}
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-24-3.pdf}
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-24-4.pdf}
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-24-5.pdf}
+
+\begin{tabular}{l|r|r}
+\hline
+  & df & BIC\\
+\hline
+lmleon & 5 & -100.7365\\
+\hline
+lmleonbeta & 5 & -131.6921\\
+\hline
+\end{tabular}
+
+\begin{tabular}{l|r|r}
+\hline
+  & df & AIC\\
+\hline
+lmleon & 5 & -114.0063\\
+\hline
+lmleonbeta & 5 & -144.9619\\
+\hline
+\end{tabular}
+
+\begin{verbatim}
+
+Call:
+betareg(formula = prop.black ~ sex + area + age, data = lions_df)
+
+Standardized weighted residuals 2:
+    Min      1Q  Median      3Q     Max 
+-2.0195 -0.6833 -0.1403  0.6231  3.7415 
+
+Coefficients (mean model with logit link):
+            Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -2.41134    0.21723 -11.101   <2e-16 ***
+sexM        -0.28305    0.14282  -1.982   0.0475 *  
+areaS        0.36519    0.15616   2.339   0.0194 *  
+age          0.39116    0.02492  15.697   <2e-16 ***
+
+Phi coefficients (precision model with identity link):
+      Estimate Std. Error z value Pr(>|z|)    
+(phi)   10.899      1.475    7.39 1.47e-13 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Type of estimator: ML (maximum likelihood)
+Log-likelihood: 77.48 on 5 Df
+Pseudo R-squared: 0.7291
+Number of iterations: 12 (BFGS) + 2 (Fisher scoring) 
+\end{verbatim}
+
+Si aplicamos la transformacion beta con la función betareg() parece que
+si mejoramos el ajuste del modelo.
+
+\hypertarget{e-discutir-la-utilizaciuxf3n-de-la-transformaciuxf3n-arcoseno-en-el-modelo-del-apartado-d-del-ejercicio-2.}{%
+\paragraph{\texorpdfstring{\textbf{(e) Discutir la utilización de la
+transformación arcoseno en el modelo del apartado (d) del ejercicio
+2.}}{(e) Discutir la utilización de la transformación arcoseno en el modelo del apartado (d) del ejercicio 2.}}\label{e-discutir-la-utilizaciuxf3n-de-la-transformaciuxf3n-arcoseno-en-el-modelo-del-apartado-d-del-ejercicio-2.}}
+
+La transformación de arcoseno (también llamada transformación de raíz
+cuadrada de arcoseno o transformación angular) se calcula como dos veces
+el arcoseno de la raíz cuadrada de la proporción. El efecto de la
+transformación arcoseno es similar al logit, en el sentido de que extrae
+los extremos de la distribución, pero no en la medida en que lo hace el
+logit. La utilización del arcoseno en el modelo de predicción de edad
+ayuda a tener un modelo que permite mejores predicciones cuando la edad
+de las leonas aumenta que es donde se puede romper la linearidad.
+
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-25-1.pdf}
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-25-2.pdf}
+\includegraphics{PEC1_RMM_files/figure-latex/unnamed-chunk-25-3.pdf}
+
+\end{document}
