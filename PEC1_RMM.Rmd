@@ -43,6 +43,8 @@ library(patchwork)
 
 ```
 
+### **Al final del documento se encuentra un link al repositorio de github donde se puede encontrar el codigo completo de esta PEC**
+
 ## Ejercicio 1 (35 pt.)
 
 Un grupo de científicos norteamericanos están interesados en encontrar un hábitat adecuado para reintroducir una especie rara de escarabajos tigre, llamada cicindela dorsalis dorsalis, los cuales viven en playas de arena de la costa del Atlántico Norte. Se muestrearon 12 playas y se midió la densidad de estos escarabajos tigre. Adicionalmente se midieron una serie de factores bióticos y abióticos tales como la exposición a las olas, tamaño de la partícula de arena, pendiente de la playa y densidad de los anfípodos depredadores. Los datos se hallan en la hoja de cálculo cicindela.xlsx.
@@ -658,4 +660,4 @@ ggplot(leonas10, aes(x = prop.black, y = age)) +
 ```
 
 
-
+[Repositorio de Github donde se puede encontrar el código completo] (https://github.com/LuisCervela/PEC1_RMM_LCC)
