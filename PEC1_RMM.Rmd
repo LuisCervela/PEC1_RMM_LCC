@@ -606,7 +606,7 @@ effect_plot(lmleonasin, pred = age, interval = TRUE, plot.points = TRUE, jitter 
 effect_plot(lmleonlogit, pred = age, interval = TRUE, plot.points = TRUE, jitter = 0.05, data = lions_df, main.title = 'Modelo logit', y.label = 'Prop black') +
 effect_plot(lmleon, pred = age, interval = TRUE, plot.points = TRUE, jitter = 0.05, data = lions_df, main.title = 'Modelo Original', y.label = 'Prop black') 
 
-lmleonbeta <- betareg(prop.black ~ sex + area + age, data = lions_df)
+
 par( mfrow= c(1,4))
 plot(lmleon, main = 'Original') 
 
@@ -616,16 +616,19 @@ plot(lmleonasin, main = 'Arcoseno')
 par(mfrow = c(1,4))
 plot(lmleonlogit, main = 'Logit') 
 
-par(mfrow = c(2,3))
-plot(lmleonbeta, main = 'Beta', which = 1:6)
+
 ```
 
 
 Si aplicamos la transformacion beta con la función betareg() parece que si mejoramos el ajuste del modelo. 
 ```{r, echo = FALSE}
+lmleonbeta <- betareg(prop.black ~ sex + area + age, data = lions_df)
+par(mfrow = c(2,3))
+plot(lmleonbeta, main = 'Beta', which = 1:6)
 kable(BIC(lmleon,lmleonbeta))
 kable(AIC(lmleon,lmleonbeta))
 summary(lmleonbeta)
+
 
 ```
 
